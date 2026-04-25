@@ -14,7 +14,7 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
         .ui { position: absolute; top: 20px; text-align: center; pointer-events: none; }
-        #gameOver {
+        #gameOver { 
             display: none; position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%); background: rgba(0,0,0,0.8);
             padding: 20px; border-radius: 10px; text-align: center; z-index: 10;
