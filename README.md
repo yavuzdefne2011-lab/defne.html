@@ -1,173 +1,189 @@
+Five Nights at Freddy's (FNAF) mekaniklerini en sade ama oynanabilir haliyle bir araya getirdim. Bu sürümde; enerji yönetimi, kameralar, ışıklar, kapılar ve sana doğru yaklaşan bir animatronic (Bonnie) bulunuyor.
+
+Bu kodu bir .html dosyası olarak kaydet ve tarayıcında aç.
+
+Basit FNAF: Gece Nöbeti
+HTML
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>2 Oktav Profesyonel Piyano</title>
+    <title>Mini FNAF Projesi</title>
     <style>
-        body { 
-            background: #121212;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            height: 100vh; margin: 0; color: white; font-family: 'Segoe UI', sans-serif;
-        }
- 
-        .piano-wrapper {
-            background: #2c2c2c;
-            padding: 40px;
-            border-radius: 15px;
-            border-bottom: 10px solid #1a1a1a;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+        body { margin: 0; background: #000; color: #fff; font-family: 'Courier New', monospace; overflow: hidden; user-select: none; }
+        
+        /* Ana Ofis Alanı */
+        #office {
+            width: 100vw; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            background: radial-gradient(circle, #333 0%, #000 70%);
+            transition: background 0.2s;
         }
 
-        .piano-keys {
-            display: flex;
-            position: relative;
+        /* Kapı ve Işık Durumları */
+        .door-overlay {
+            position: absolute; width: 15%; height: 80%;
+            background: #111; border: 4px solid #444; top: 10%;
+            display: none; z-index: 5;
+        }
+        #left-door { left: 5%; }
+        #right-door { right: 5%; }
+
+        /* Kamera Ekranı */
+        #cam-screen {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: #000; z-index: 20;
+            border: 15px solid #222; box-sizing: border-box;
+        }
+        .static {
+            position: absolute; width: 100%; height: 100%;
+            background: url('https://media.giphy.com/media/oEI9uWUicG5U4/giphy.gif');
+            opacity: 0.15; pointer-events: none;
         }
 
-        .key {
-            position: relative;
-            cursor: pointer;
-            transition: all 0.05s;
-            user-select: none;
+        /* UI Paneli */
+        #ui {
+            position: fixed; bottom: 20px; width: 100%;
+            display: flex; justify-content: space-around; z-index: 30;
         }
-
-        /* Beyaz Tuşlar */
-        .white {
-            width: 50px; height: 250px;
-            background: linear-gradient(to bottom, #eee 0%, #fff 100%);
-            border: 1px solid #bbb;
-            border-radius: 0 0 5px 5px;
-            z-index: 1;
-            display: flex; flex-direction: column;
-            justify-content: flex-end; align-items: center;
-            padding-bottom: 15px; color: #555; font-size: 14px; font-weight: bold;
+        button {
+            padding: 15px 25px; background: #222; color: #eee;
+            border: 2px solid #555; cursor: pointer; font-weight: bold;
         }
+        button:active { background: #444; }
+        .stats { position: fixed; top: 20px; left: 20px; font-size: 24px; z-index: 30; }
 
-        .white.active {
-            background: #ddd;
-            transform: translateY(3px);
-            box-shadow: inset 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        /* Siyah Tuşlar */
-        .black {
-            width: 34px; height: 150px;
-            background: linear-gradient(to bottom, #444 0%, #000 100%);
-            border: 1px solid #000;
-            border-radius: 0 0 3px 3px;
-            position: absolute;
-            z-index: 2;
-            margin-left: -17px;
-            display: flex; flex-direction: column;
-            justify-content: flex-end; align-items: center;
-            padding-bottom: 10px; color: #fff; font-size: 11px;
-        }
-
-        .black.active {
-            background: #333;
-            transform: translateY(3px);
-        }
-
-        .info { margin-bottom: 20px; text-align: center; }
-        kbd {
-            background: #444; border: 1px solid #666;
-            padding: 2px 5px; border-radius: 3px; font-family: monospace;
+        /* JumpScare */
+        #jumpscare {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: red; z-index: 100; justify-content: center; align-items: center;
         }
     </style>
 </head>
 <body>
 
-<div class="info">
-    <h2>2 Oktav Dijital Piyano</h2>
-    <p>Alt Oktav: <kbd>Z</kbd> <kbd>X</kbd> <kbd>C</kbd> <kbd>V</kbd> <kbd>B</kbd> <kbd>N</kbd> <kbd>M</kbd> | Üst Oktav: <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> <kbd>R</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd></p>
+<div class="stats">
+    GÜÇ: %<span id="power">100</span><br>
+    SAAT: <span id="time">12</span> AM
 </div>
 
-<div class="piano-wrapper">
-    <div class="piano-keys" id="piano">
-        <div class="key white" data-key="Z" data-freq="261.63">Z</div>
-        <div class="key black" data-key="S" data-freq="277.18" style="left: 50px;">S</div>
-        <div class="key white" data-key="X" data-freq="293.66">X</div>
-        <div class="key black" data-key="D" data-freq="311.13" style="left: 100px;">D</div>
-        <div class="key white" data-key="C" data-freq="329.63">C</div>
-        <div class="key white" data-key="V" data-freq="349.23">V</div>
-        <div class="key black" data-key="G" data-freq="369.99" style="left: 200px;">G</div>
-        <div class="key white" data-key="B" data-freq="392.00">B</div>
-        <div class="key black" data-key="H" data-freq="415.30" style="left: 250px;">H</div>
-        <div class="key white" data-key="N" data-freq="440.00">N</div>
-        <div class="key black" data-key="J" data-freq="466.16" style="left: 300px;">J</div>
-        <div class="key white" data-key="M" data-freq="493.88">M</div>
+<div id="office">
+    <div id="left-door" class="door-overlay"></div>
+    <div id="right-door" class="door-overlay"></div>
+    <h2 id="office-msg">OFİS - ÖNÜNE BAKILIYOR</h2>
+</div>
 
-        <div class="key white" data-key="Q" data-freq="523.25">Q</div>
-        <div class="key black" data-key="2" data-freq="554.37" style="left: 400px;">2</div>
-        <div class="key white" data-key="W" data-freq="587.33">W</div>
-        <div class="key black" data-key="3" data-freq="622.25" style="left: 450px;">3</div>
-        <div class="key white" data-key="E" data-freq="659.25">E</div>
-        <div class="key white" data-key="R" data-freq="698.46">R</div>
-        <div class="key black" data-key="5" data-freq="739.99" style="left: 550px;">5</div>
-        <div class="key white" data-key="T" data-freq="783.99">T</div>
-        <div class="key black" data-key="6" data-freq="830.61" style="left: 600px;">6</div>
-        <div class="key white" data-key="Y" data-freq="880.00">Y</div>
-        <div class="key black" data-key="7" data-freq="932.33" style="left: 650px;">7</div>
-        <div class="key white" data-key="U" data-freq="987.77">U</div>
-        <div class="key white" data-key="I" data-freq="1046.50">I</div>
+<div id="cam-screen">
+    <div class="static"></div>
+    <div style="padding: 50px;">
+        <h3>GÜVENLİK KAMERASI 01A</h3>
+        <p id="cam-status">KORİDORDA KİMSE YOK.</p>
     </div>
 </div>
 
+<div id="jumpscare"><h1>BOOO! YAKALANDIN!</h1></div>
+
+<div id="ui">
+    <button onclick="toggleDoor('left')">SOL KAPI</button>
+    <button onclick="toggleLight()">IŞIK</button>
+    <button onclick="toggleCam()">KAMERA</button>
+    <button onclick="toggleDoor('right')">SAĞ KAPI</button>
+</div>
+
 <script>
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const activeNotes = new Map();
+    let power = 100;
+    let hour = 12;
+    let leftDoorOpen = true;
+    let rightDoorOpen = true;
+    let camOpen = false;
+    let lightOpen = false;
+    let enemyPos = 0; // 0: Sahne, 1: Koridor, 2: Kapı Eşiği, 3: Saldırı!
 
-    function playNote(key, freq) {
-        if (activeNotes.has(key)) return;
+    // Enerji ve Zaman Döngüsü
+    const gameTick = setInterval(() => {
+        // Enerji Azaltma
+        let consumption = 0.5;
+        if (!leftDoorOpen) consumption += 1.5;
+        if (!rightDoorOpen) consumption += 1.5;
+        if (camOpen) consumption += 1.0;
+        if (lightOpen) consumption += 0.5;
+        
+        power -= consumption;
+        document.getElementById('power').innerText = Math.floor(power);
 
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+        if (power <= 0) gameOver("Enerji Bitti!");
 
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        // Düşman Hareketi (Her 5 saniyede bir şans)
+        if (Math.random() > 0.7) {
+            enemyPos++;
+            updateCamStatus();
+        }
 
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+        // Saldırı Kontrolü
+        if (enemyPos === 3) {
+            if (!leftDoorOpen) {
+                enemyPos = 0; // Kapı kapalıysa geri gider
+                updateCamStatus();
+            } else if (!camOpen) {
+                gameOver("Bonnie seni yakaladı!");
+            }
+        }
+    }, 3000);
 
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
+    // Saat Döngüsü
+    setInterval(() => {
+        hour++;
+        if (hour > 12) hour = 1;
+        document.getElementById('time').innerText = hour;
+        if (hour === 6) {
+            alert("Kazandın! Saat 06:00");
+            location.reload();
+        }
+    }, 45000); // Her 45 saniyede bir saat geçer
 
-        osc.start();
-        activeNotes.set(key, { osc, gain });
-
-        const el = document.querySelector(`[data-key="${key}"]`);
-        if (el) el.classList.add('active');
-    }
-
-    function stopNote(key) {
-        const note = activeNotes.get(key);
-        if (note) {
-            note.gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            note.osc.stop(audioCtx.currentTime + 0.1);
-            activeNotes.delete(key);
-            
-            const el = document.querySelector(`[data-key="${key}"]`);
-            if (el) el.classList.remove('active');
+    function toggleDoor(side) {
+        if (side === 'left') {
+            leftDoorOpen = !leftDoorOpen;
+            document.getElementById('left-door').style.display = leftDoorOpen ? 'none' : 'block';
+        } else {
+            rightDoorOpen = !rightDoorOpen;
+            document.getElementById('right-door').style.display = rightDoorOpen ? 'none' : 'block';
         }
     }
 
-    // Klavye Dinleme
-    window.addEventListener('keydown', e => {
-        const key = e.key.toUpperCase();
-        const el = document.querySelector(`[data-key="${key}"]`);
-        if (el) playNote(key, parseFloat(el.dataset.freq));
-    });
+    function toggleCam() {
+        camOpen = !camOpen;
+        document.getElementById('cam-screen').style.display = camOpen ? 'block' : 'none';
+        updateCamStatus();
+    }
 
-    window.addEventListener('keyup', e => {
-        stopNote(e.key.toUpperCase());
-    });
+    function toggleLight() {
+        lightOpen = !lightOpen;
+        const office = document.getElementById('office');
+        if (lightOpen) {
+            office.style.background = (enemyPos === 2) ? "radial-gradient(circle, #f00 0%, #333 70%)" : "radial-gradient(circle, #666 0%, #222 70%)";
+            document.getElementById('office-msg').innerText = (enemyPos === 2) ? "BİRİ VAR!" : "KİMSE YOK";
+        } else {
+            office.style.background = "radial-gradient(circle, #333 0%, #000 70%)";
+            document.getElementById('office-msg').innerText = "OFİS - ÖNÜNE BAKILIYOR";
+        }
+    }
 
-    // Fare Dinleme
-    document.querySelectorAll('.key').forEach(k => {
-        k.addEventListener('mousedown', () => playNote(k.dataset.key, parseFloat(k.dataset.freq)));
-        k.addEventListener('mouseup', () => stopNote(k.dataset.key));
-        k.addEventListener('mouseleave', () => stopNote(k.dataset.key));
-    });
+    function updateCamStatus() {
+        const status = document.getElementById('cam-status');
+        if (enemyPos === 0) status.innerText = "Bonnie sahnede bekliyor.";
+        else if (enemyPos === 1) status.innerText = "Karanlık koridorda bir karaltı var...";
+        else if (enemyPos === 2) status.innerText = "KAMERA ARIZASI! (Kapıya çok yakın!)";
+    }
+
+    function gameOver(reason) {
+        clearInterval(gameTick);
+        document.getElementById('jumpscare').style.display = 'flex';
+        setTimeout(() => {
+            alert("OYUN BİTTİ: " + reason);
+            location.reload();
+        }, 1000);
+    }
 </script>
 
 </body>
