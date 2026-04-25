@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>2 Oktav Profesyonel Piyano</title>
     <style>
-        body {
+        body { 
             background: #121212;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
