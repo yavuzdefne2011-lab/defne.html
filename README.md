@@ -1,150 +1,177 @@
-Harika bir fikir! Web tarayıcısı üzerinde çalışan, hem fareyle tıklanabilen hem de klavyedeki tuşlarla kontrol edilebilen bir piyano yapmak oldukça eğlencelidir.
-
-Bu projede sesleri üretmek için harici ses dosyalarına ihtiyaç duymadan, tarayıcının kendi Web Audio API özelliğini kullanacağız. Böylece kod tek başına (standalone) çalışabilecek.
-
-HTML/JS Piyano Kodu
-Bu kodu bir .html dosyası olarak kaydedip tarayıcında açabilirsin.
-
-HTML
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>JS Dijital Piyano</title>
+    <title>Gelişmiş Web Piyano</title>
     <style>
         body {
-            background: #222;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            color: white;
-            font-family: sans-serif;
+            background: #1a1a1a;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 100vh; margin: 0; color: white; font-family: 'Segoe UI', sans-serif;
         }
 
-        .piano {
-            display: flex;
+        .piano-container {
             position: relative;
+            display: flex;
+            padding: 20px;
+            background: #333;
+            border-radius: 10px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         .key {
-            width: 60px;
-            height: 200px;
-            border: 1px solid #000;
-            background: white;
-            border-radius: 0 0 5px 5px;
+            position: relative;
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            padding-bottom: 10px;
-            color: #333;
-            font-weight: bold;
-            transition: background 0.1s;
             user-select: none;
         }
 
-        .key.active {
-            background: #ddd;
+        /* Beyaz Tuşlar */
+        .white {
+            width: 60px; height: 230px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 0 0 5px 5px;
+            display: flex; flex-direction: column;
+            justify-content: flex-end; align-items: center;
+            padding-bottom: 15px; color: #333; font-weight: bold;
+            z-index: 1; transition: background 0.1s, transform 0.05s;
+        }
+
+        .white.active {
+            background: #e0e0e0;
             transform: translateY(2px);
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.2);
         }
 
         /* Siyah Tuşlar */
-        .black-key {
-            width: 40px;
-            height: 120px;
+        .black {
+            width: 40px; height: 140px;
             background: #000;
             color: white;
             position: absolute;
             z-index: 2;
-            margin-left: -20px;
+            margin-left: -20px; /* Bir önceki beyaz tuşun üzerine binmesi için */
             border-radius: 0 0 3px 3px;
+            display: flex; flex-direction: column;
+            justify-content: flex-end; align-items: center;
+            padding-bottom: 10px; font-size: 12px;
+            transition: background 0.1s, transform 0.05s;
         }
 
-        .black-key.active {
+        .black.active {
             background: #444;
+            transform: translateY(2px);
         }
 
-        .controls { margin-bottom: 20px; text-align: center; }
+        .label { pointer-events: none; }
+        .hint { font-size: 10px; opacity: 0.6; margin-top: 5px; }
+
+        .controls { margin-bottom: 30px; text-align: center; }
+        kbd {
+            background: #444; padding: 2px 6px; border-radius: 4px;
+            border: 1px solid #666; font-family: monospace;
+        }
     </style>
 </head>
 <body>
 
 <div class="controls">
-    <h1>JS Klavye Piyano</h1>
-    <p>Tuşlara tıkla veya klavyendeki harfleri kullan: <strong>A, S, D, F, G, H, J, K</strong></p>
+    <h1>Profesyonel Klavye Piyano</h1>
+    <p>Beyazlar: <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <kbd>F</kbd> <kbd>G</kbd> <kbd>H</kbd> <kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd> <kbd>;</kbd></p>
+    <p>Siyahlar: <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> <kbd>O</kbd> <kbd>P</kbd></p>
 </div>
 
-<div class="piano" id="piano">
-    <div class="key" data-note="C4" data-key="A">A <span>(Do)</span></div>
-    <div class="key" data-note="D4" data-key="S">S <span>(Re)</span></div>
-    <div class="key" data-note="E4" data-key="D">D <span>(Mi)</span></div>
-    <div class="key" data-note="F4" data-key="F">F <span>(Fa)</span></div>
-    <div class="key" data-note="G4" data-key="G">G <span>(Sol)</span></div>
-    <div class="key" data-note="A4" data-key="H">H <span>(La)</span></div>
-    <div class="key" data-note="B4" data-key="J">J <span>(Si)</span></div>
-    <div class="key" data-note="C5" data-key="K">K <span>(Do)</span></div>
+<div class="piano-container" id="piano">
+    <div class="key white" data-note="C4" data-key="A"><span class="label">A</span><span class="hint">Do</span></div>
+    <div class="key black" data-note="C#4" data-key="W" style="left: 80px;"><span class="label">W</span></div>
+    
+    <div class="key white" data-note="D4" data-key="S"><span class="label">S</span><span class="hint">Re</span></div>
+    <div class="key black" data-note="D#4" data-key="E" style="left: 140px;"><span class="label">E</span></div>
+    
+    <div class="key white" data-note="E4" data-key="D"><span class="label">D</span><span class="hint">Mi</span></div>
+    
+    <div class="key white" data-note="F4" data-key="F"><span class="label">F</span><span class="hint">Fa</span></div>
+    <div class="key black" data-note="F#4" data-key="T" style="left: 260px;"><span class="label">T</span></div>
+    
+    <div class="key white" data-note="G4" data-key="G"><span class="label">G</span><span class="hint">Sol</span></div>
+    <div class="key black" data-note="G#4" data-key="Y" style="left: 320px;"><span class="label">Y</span></div>
+    
+    <div class="key white" data-note="A4" data-key="H"><span class="label">H</span><span class="hint">La</span></div>
+    <div class="key black" data-note="A#4" data-key="U" style="left: 380px;"><span class="label">U</span></div>
+    
+    <div class="key white" data-note="B4" data-key="J"><span class="label">J</span><span class="hint">Si</span></div>
+    
+    <div class="key white" data-note="C5" data-key="K"><span class="label">K</span><span class="hint">Do</span></div>
+    <div class="key black" data-note="C#5" data-key="O" style="left: 500px;"><span class="label">O</span></div>
+    
+    <div class="key white" data-note="D5" data-key="L"><span class="label">L</span><span class="hint">Re</span></div>
+    <div class="key black" data-note="D#5" data-key="P" style="left: 560px;"><span class="label">P</span></div>
+    
+    <div class="key white" data-note="E5" data-key=";"><span class="label">;</span><span class="hint">Mi</span></div>
 </div>
 
 <script>
-    // Ses dalgaları için frekans tablosu
-    const notes = {
-        "A": 261.63, // C4 (Do)
-        "S": 293.66, // D4 (Re)
-        "D": 329.63, // E4 (Mi)
-        "F": 349.23, // F4 (Fa)
-        "G": 392.00, // G4 (Sol)
-        "H": 440.00, // A4 (La)
-        "J": 493.88, // B4 (Si)
-        "K": 523.25  // C5 (Do)
-    };
-
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+    // Nota Frekansları
+    const noteFrequencies = {
+        "A": 261.63, "W": 277.18, "S": 293.66, "E": 311.13, "D": 329.63,
+        "F": 349.23, "T": 369.99, "G": 392.00, "Y": 415.30, "H": 440.00,
+        "U": 466.16, "J": 493.88, "K": 523.25, "O": 554.37, "L": 587.33,
+        "P": 622.25, ";": 659.25
+    };
+
+    const activeOscillators = {};
+
     function playNote(key) {
-        if (!notes[key]) return;
+        if (!noteFrequencies[key] || activeOscillators[key]) return;
 
-        // Ses oluşturma (Oscillator)
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
 
-        oscillator.type = 'triangle'; // Piyano benzeri yumuşak bir ses
-        oscillator.frequency.setValueAtTime(notes[key], audioCtx.currentTime);
+        osc.type = 'sine'; // Daha temiz, piyano benzeri tını
+        osc.frequency.setValueAtTime(noteFrequencies[key], audioCtx.currentTime);
 
-        // Sesin yavaşça sönmesi (Fade out)
-        gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
 
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 1);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1.5);
 
-        // Görsel efekt
+        activeOscillators[key] = osc;
+
         const el = document.querySelector(`[data-key="${key}"]`);
-        if(el) {
-            el.classList.add('active');
-            setTimeout(() => el.classList.remove('active'), 100);
+        if(el) el.classList.add('active');
+    }
+
+    function stopNote(key) {
+        if (activeOscillators[key]) {
+            delete activeOscillators[key];
+            const el = document.querySelector(`[data-key="${key}"]`);
+            if(el) el.classList.remove('active');
         }
     }
 
-    // Fare tıklama dinleyici
+    // Fare Etkinlikleri
     document.querySelectorAll('.key').forEach(keyEl => {
-        keyEl.addEventListener('mousedown', () => {
-            playNote(keyEl.getAttribute('data-key'));
-        });
+        keyEl.addEventListener('mousedown', () => playNote(keyEl.getAttribute('data-key')));
+        keyEl.addEventListener('mouseup', () => stopNote(keyEl.getAttribute('data-key')));
+        keyEl.addEventListener('mouseleave', () => stopNote(keyEl.getAttribute('data-key')));
     });
 
-    // Klavye tuş dinleyici
+    // Klavye Etkinlikleri
     window.addEventListener('keydown', (e) => {
-        const key = e.key.toUpperCase();
-        if (notes[key]) {
-            playNote(key);
-        }
+        const key = e.key === ';' ? ';' : e.key.toUpperCase();
+        playNote(key);
+    });
+
+    window.addEventListener('keyup', (e) => {
+        const key = e.key === ';' ? ';' : e.key.toUpperCase();
+        stopNote(key);
     });
 </script>
 
