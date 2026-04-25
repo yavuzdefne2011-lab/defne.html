@@ -7,8 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #8b658b;
-    --surface: #836fff;
+    --bg: #436eee;
+    --surface: #1c0f45;
     --card: #1a1a26;
     --border: #2a2a3d;
     --accent: #7c6af7;
