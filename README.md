@@ -10,7 +10,7 @@
             align-items: center; justify-content: center;
             height: 100vh; margin: 0; color: white; font-family: 'Segoe UI', sans-serif;
         }
-
+ 
         .piano-wrapper {
             background: #2c2c2c;
             padding: 40px;
