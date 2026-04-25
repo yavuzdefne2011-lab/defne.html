@@ -2,176 +2,171 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Gelişmiş Web Piyano</title>
+    <title>2 Oktav Profesyonel Piyano</title>
     <style>
-        body { 
-            background: #1a1a1a;
+        body {
+            background: #121212;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             height: 100vh; margin: 0; color: white; font-family: 'Segoe UI', sans-serif;
         }
 
-        .piano-container {
-            position: relative;
+        .piano-wrapper {
+            background: #2c2c2c;
+            padding: 40px;
+            border-radius: 15px;
+            border-bottom: 10px solid #1a1a1a;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+        }
+
+        .piano-keys {
             display: flex;
-            padding: 20px;
-            background: #333;
-            border-radius: 10px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
         }
 
         .key {
             position: relative;
             cursor: pointer;
+            transition: all 0.05s;
             user-select: none;
         }
 
         /* Beyaz Tuşlar */
         .white {
-            width: 60px; height: 230px;
-            background: white;
-            border: 1px solid #ccc;
+            width: 50px; height: 250px;
+            background: linear-gradient(to bottom, #eee 0%, #fff 100%);
+            border: 1px solid #bbb;
             border-radius: 0 0 5px 5px;
+            z-index: 1;
             display: flex; flex-direction: column;
             justify-content: flex-end; align-items: center;
-            padding-bottom: 15px; color: #333; font-weight: bold;
-            z-index: 1; transition: background 0.1s, transform 0.05s;
+            padding-bottom: 15px; color: #555; font-size: 14px; font-weight: bold;
         }
 
         .white.active {
-            background: #e0e0e0;
-            transform: translateY(2px);
-            box-shadow: inset 0 5px 10px rgba(0,0,0,0.2);
+            background: #ddd;
+            transform: translateY(3px);
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.3);
         }
 
         /* Siyah Tuşlar */
         .black {
-            width: 40px; height: 140px;
-            background: #000;
-            color: white;
+            width: 34px; height: 150px;
+            background: linear-gradient(to bottom, #444 0%, #000 100%);
+            border: 1px solid #000;
+            border-radius: 0 0 3px 3px;
             position: absolute;
             z-index: 2;
-            margin-left: -20px; /* Bir önceki beyaz tuşun üzerine binmesi için */
-            border-radius: 0 0 3px 3px;
+            margin-left: -17px;
             display: flex; flex-direction: column;
             justify-content: flex-end; align-items: center;
-            padding-bottom: 10px; font-size: 12px;
-            transition: background 0.1s, transform 0.05s;
+            padding-bottom: 10px; color: #fff; font-size: 11px;
         }
 
         .black.active {
-            background: #444;
-            transform: translateY(2px);
+            background: #333;
+            transform: translateY(3px);
         }
 
-        .label { pointer-events: none; }
-        .hint { font-size: 10px; opacity: 0.6; margin-top: 5px; }
-
-        .controls { margin-bottom: 30px; text-align: center; }
+        .info { margin-bottom: 20px; text-align: center; }
         kbd {
-            background: #444; padding: 2px 6px; border-radius: 4px;
-            border: 1px solid #666; font-family: monospace;
+            background: #444; border: 1px solid #666;
+            padding: 2px 5px; border-radius: 3px; font-family: monospace;
         }
     </style>
 </head>
 <body>
 
-<div class="controls">
-    <h1>Profesyonel Klavye Piyano</h1>
-    <p>Beyazlar: <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <kbd>F</kbd> <kbd>G</kbd> <kbd>H</kbd> <kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd> <kbd>;</kbd></p>
-    <p>Siyahlar: <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> <kbd>O</kbd> <kbd>P</kbd></p>
+<div class="info">
+    <h2>2 Oktav Dijital Piyano</h2>
+    <p>Alt Oktav: <kbd>Z</kbd> <kbd>X</kbd> <kbd>C</kbd> <kbd>V</kbd> <kbd>B</kbd> <kbd>N</kbd> <kbd>M</kbd> | Üst Oktav: <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> <kbd>R</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd></p>
 </div>
 
-<div class="piano-container" id="piano">
-    <div class="key white" data-note="C4" data-key="A"><span class="label">A</span><span class="hint">Do</span></div>
-    <div class="key black" data-note="C#4" data-key="W" style="left: 80px;"><span class="label">W</span></div>
-    
-    <div class="key white" data-note="D4" data-key="S"><span class="label">S</span><span class="hint">Re</span></div>
-    <div class="key black" data-note="D#4" data-key="E" style="left: 140px;"><span class="label">E</span></div>
-    
-    <div class="key white" data-note="E4" data-key="D"><span class="label">D</span><span class="hint">Mi</span></div>
-    
-    <div class="key white" data-note="F4" data-key="F"><span class="label">F</span><span class="hint">Fa</span></div>
-    <div class="key black" data-note="F#4" data-key="T" style="left: 260px;"><span class="label">T</span></div>
-    
-    <div class="key white" data-note="G4" data-key="G"><span class="label">G</span><span class="hint">Sol</span></div>
-    <div class="key black" data-note="G#4" data-key="Y" style="left: 320px;"><span class="label">Y</span></div>
-    
-    <div class="key white" data-note="A4" data-key="H"><span class="label">H</span><span class="hint">La</span></div>
-    <div class="key black" data-note="A#4" data-key="U" style="left: 380px;"><span class="label">U</span></div>
-    
-    <div class="key white" data-note="B4" data-key="J"><span class="label">J</span><span class="hint">Si</span></div>
-    
-    <div class="key white" data-note="C5" data-key="K"><span class="label">K</span><span class="hint">Do</span></div>
-    <div class="key black" data-note="C#5" data-key="O" style="left: 500px;"><span class="label">O</span></div>
-    
-    <div class="key white" data-note="D5" data-key="L"><span class="label">L</span><span class="hint">Re</span></div>
-    <div class="key black" data-note="D#5" data-key="P" style="left: 560px;"><span class="label">P</span></div>
-    
-    <div class="key white" data-note="E5" data-key=";"><span class="label">;</span><span class="hint">Mi</span></div>
+<div class="piano-wrapper">
+    <div class="piano-keys" id="piano">
+        <div class="key white" data-key="Z" data-freq="261.63">Z</div>
+        <div class="key black" data-key="S" data-freq="277.18" style="left: 50px;">S</div>
+        <div class="key white" data-key="X" data-freq="293.66">X</div>
+        <div class="key black" data-key="D" data-freq="311.13" style="left: 100px;">D</div>
+        <div class="key white" data-key="C" data-freq="329.63">C</div>
+        <div class="key white" data-key="V" data-freq="349.23">V</div>
+        <div class="key black" data-key="G" data-freq="369.99" style="left: 200px;">G</div>
+        <div class="key white" data-key="B" data-freq="392.00">B</div>
+        <div class="key black" data-key="H" data-freq="415.30" style="left: 250px;">H</div>
+        <div class="key white" data-key="N" data-freq="440.00">N</div>
+        <div class="key black" data-key="J" data-freq="466.16" style="left: 300px;">J</div>
+        <div class="key white" data-key="M" data-freq="493.88">M</div>
+
+        <div class="key white" data-key="Q" data-freq="523.25">Q</div>
+        <div class="key black" data-key="2" data-freq="554.37" style="left: 400px;">2</div>
+        <div class="key white" data-key="W" data-freq="587.33">W</div>
+        <div class="key black" data-key="3" data-freq="622.25" style="left: 450px;">3</div>
+        <div class="key white" data-key="E" data-freq="659.25">E</div>
+        <div class="key white" data-key="R" data-freq="698.46">R</div>
+        <div class="key black" data-key="5" data-freq="739.99" style="left: 550px;">5</div>
+        <div class="key white" data-key="T" data-freq="783.99">T</div>
+        <div class="key black" data-key="6" data-freq="830.61" style="left: 600px;">6</div>
+        <div class="key white" data-key="Y" data-freq="880.00">Y</div>
+        <div class="key black" data-key="7" data-freq="932.33" style="left: 650px;">7</div>
+        <div class="key white" data-key="U" data-freq="987.77">U</div>
+        <div class="key white" data-key="I" data-freq="1046.50">I</div>
+    </div>
 </div>
 
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const activeNotes = new Map();
 
-    // Nota Frekansları
-    const noteFrequencies = {
-        "A": 261.63, "W": 277.18, "S": 293.66, "E": 311.13, "D": 329.63,
-        "F": 349.23, "T": 369.99, "G": 392.00, "Y": 415.30, "H": 440.00,
-        "U": 466.16, "J": 493.88, "K": 523.25, "O": 554.37, "L": 587.33,
-        "P": 622.25, ";": 659.25
-    };
-
-    const activeOscillators = {};
-
-    function playNote(key) {
-        if (!noteFrequencies[key] || activeOscillators[key]) return;
+    function playNote(key, freq) {
+        if (activeNotes.has(key)) return;
 
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
 
-        osc.type = 'sine'; // Daha temiz, piyano benzeri tını
-        osc.frequency.setValueAtTime(noteFrequencies[key], audioCtx.currentTime);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
 
         osc.connect(gain);
         gain.connect(audioCtx.destination);
 
         osc.start();
-        osc.stop(audioCtx.currentTime + 1.5);
-
-        activeOscillators[key] = osc;
+        activeNotes.set(key, { osc, gain });
 
         const el = document.querySelector(`[data-key="${key}"]`);
-        if(el) el.classList.add('active');
+        if (el) el.classList.add('active');
     }
 
     function stopNote(key) {
-        if (activeOscillators[key]) {
-            delete activeOscillators[key];
+        const note = activeNotes.get(key);
+        if (note) {
+            note.gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            note.osc.stop(audioCtx.currentTime + 0.1);
+            activeNotes.delete(key);
+            
             const el = document.querySelector(`[data-key="${key}"]`);
-            if(el) el.classList.remove('active');
+            if (el) el.classList.remove('active');
         }
     }
 
-    // Fare Etkinlikleri
-    document.querySelectorAll('.key').forEach(keyEl => {
-        keyEl.addEventListener('mousedown', () => playNote(keyEl.getAttribute('data-key')));
-        keyEl.addEventListener('mouseup', () => stopNote(keyEl.getAttribute('data-key')));
-        keyEl.addEventListener('mouseleave', () => stopNote(keyEl.getAttribute('data-key')));
+    // Klavye Dinleme
+    window.addEventListener('keydown', e => {
+        const key = e.key.toUpperCase();
+        const el = document.querySelector(`[data-key="${key}"]`);
+        if (el) playNote(key, parseFloat(el.dataset.freq));
     });
 
-    // Klavye Etkinlikleri
-    window.addEventListener('keydown', (e) => {
-        const key = e.key === ';' ? ';' : e.key.toUpperCase();
-        playNote(key);
+    window.addEventListener('keyup', e => {
+        stopNote(e.key.toUpperCase());
     });
 
-    window.addEventListener('keyup', (e) => {
-        const key = e.key === ';' ? ';' : e.key.toUpperCase();
-        stopNote(key);
+    // Fare Dinleme
+    document.querySelectorAll('.key').forEach(k => {
+        k.addEventListener('mousedown', () => playNote(k.dataset.key, parseFloat(k.dataset.freq)));
+        k.addEventListener('mouseup', () => stopNote(k.dataset.key));
+        k.addEventListener('mouseleave', () => stopNote(k.dataset.key));
     });
 </script>
 
