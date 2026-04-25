@@ -5,7 +5,7 @@ Bu kod; zemini, ışıklandırmayı ve W-A-S-D tuşlarıyla 3 boyutlu uzayda har
 3D Yürüyen Karakter Simülasyonu
 Aşağıdaki kodu bir .html dosyası olarak kaydet ve çalıştır:
 
-HTML
+HTML 
 <!DOCTYPE html>
 <html lang="tr">
 <head>
