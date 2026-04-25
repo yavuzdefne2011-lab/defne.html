@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Gelişmiş Web Piyano</title>
     <style>
-        body {
+        body { 
             background: #1a1a1a;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
